@@ -76,13 +76,49 @@ async function searchForCharacter(query) {
   displayCharacters(characterData.results)
 }
 
+const links = document.querySelectorAll('.characters a');
+
+links.forEach(link => {
+  link.addEventListener('click', () => {
+    const characterUrl = link.getAttribute('data-url');
+    openCharacterDialog(characterUrl);
+  });
+});
+
+
 function displayCharacters(characters){
   const listOfCharacterNames = data.results.map(character => {
-    return `<li>${character.name}</li>`
+    return `<li><a data-url="${character.url}">${character.name}</a></li>`
+
   }).join(" ");
 
   results.innerHTML = `<ul class="characters">${listOfCharacterNames}</ul>`;
+
 }
+
+function openCharacterDialog(characterApiUrl) {
+  // Open the dialog
+  dialog.showModal();
+
+  fetch(characterApiUrl).then(resp => resp.json()).then(data => {
+      characterTitle.innerText = data.name;
+      dialogContent.innerHTML = `
+        <p><strong>Height:</strong> ${data.height}</p>
+        <p><strong>Mass:</strong> ${data.mass}</p>
+         <p><strong>Gender:</strong> ${data.gender}</p>
+          `;
+
+  }).catch(err => {
+      console.log(err);
+      dialogContent.innerHTML = 'Failed to load data.';
+
+  });
+  closeDialogButton.addEventListener('click', () => {
+    dialog.close();
+  });
+  
+}
+
 
 
 const dialog = document.getElementById("popup-dialog");
