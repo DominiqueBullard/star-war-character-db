@@ -5,6 +5,9 @@ const searchInput = document.getElementById("search-input");
 searchInput.addEventListener("input", function (e) {
   // Get the value of the input
   const input = e.target.value;
+  if(input.lenght >= 1){
+    debouncedCharacterSearch(input)
+  }
   console.log(input);
   searchForCharacter(input)
 
@@ -58,7 +61,14 @@ document.addEventListener("DOMContentLoaded", function(){
 })
 
 document.addEventListener("DOMContentLoaded", function () {
-  fetch(`https://swapi.py4e.com/api/people`).then(resp => resp.json()).then(data => {
+  fetch(`https://swapi.py4e.com/api/people`)
+  .then(resp => resp.json())
+  .then(data => {
+    if (data.count >= 1){
+      displayCharacters(data.results)
+    } else {
+      displayError()
+    }
     console.log(data)
     displayCharacters(data.results);
   }).catch(e => {
@@ -71,7 +81,11 @@ document.addEventListener("DOMContentLoaded", function () {
 async function searchForCharacter(query) {
   const characterData = await
   fetch(`https://swapi.py4e.com/api/people?search=${query}`).then(resp => resp.json());
-
+  if (characterData.count >= 1){
+    displayCharacters(characterData.results)
+  } else {
+    displayError
+  }
 	console.log(characterData);
   displayCharacters(characterData.results)
 }
@@ -95,6 +109,16 @@ function displayCharacters(characters){
   results.innerHTML = `<ul class="characters">${listOfCharacterNames}</ul>`;
 
 }
+
+function displayError() {
+  results.innerHTML = "<ul class='characters'><li>The characters you seek are not here</li></ul>"
+} try {
+  throw new Error ("Something went wrong");
+} catch (error) {
+  displayError();
+  console.log(error)
+}
+
 
 function openCharacterDialog(characterApiUrl) {
   // Open the dialog
